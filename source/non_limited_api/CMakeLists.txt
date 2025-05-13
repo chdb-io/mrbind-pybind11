@@ -12,6 +12,13 @@ if (MSVC)
   add_compile_options( /EHc- )
 endif()
 
+if (NOT WIN32)
+  # Get rid of `-Wl,-z,defs` if someone has added it to our flags.
+  # On platforms other than Windows, we rely on not linking Python and
+  #   not getting undefined references from that (because any form of linking there would lock us to a specific minor version).
+  string(REPLACE "-Wl,-z,defs" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
+endif()
+
 if (DEFINED PYBIND11_NONLIMITEDAPI_PYTHON_HEADERS_VERSION)
   find_package(Python ${PYBIND11_NONLIMITEDAPI_PYTHON_HEADERS_VERSION} EXACT REQUIRED COMPONENTS Interpreter Development)
 else()

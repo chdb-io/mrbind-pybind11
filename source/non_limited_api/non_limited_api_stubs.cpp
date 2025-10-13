@@ -12,7 +12,11 @@
 #define PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX ".so"
 #endif
 #include <dlfcn.h> // For `dlopen` and friends.
+#ifdef __MUSL__
+#define PYBIND11_NONLIMITEDAPI_DLOPEN(dir, file) dlopen((dir + "lib" + file + PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX).c_str(), RTLD_NOW | RTLD_GLOBAL)
+#else
 #define PYBIND11_NONLIMITEDAPI_DLOPEN(dir, file) dlopen((dir + "lib" + file + PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX).c_str(), RTLD_NOW | RTLD_LOCAL)
+#endif
 #define PYBIND11_NONLIMITEDAPI_DLOPEN_ERROR dlerror()
 #endif
 

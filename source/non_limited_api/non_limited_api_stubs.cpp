@@ -15,7 +15,14 @@
 #ifdef __MUSL__
 #define PYBIND11_NONLIMITEDAPI_DLOPEN(dir, file) dlopen((dir + "lib" + file + PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX).c_str(), RTLD_NOW | RTLD_GLOBAL)
 #else
-#define PYBIND11_NONLIMITEDAPI_DLOPEN(dir, file) dlopen((dir + "lib" + file + PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX).c_str(), RTLD_NOW | RTLD_LOCAL)
+#ifndef RTLD_DEEPBIND
+#ifdef __linux__
+#error "RTLD_DEEPBIND is required on Linux to prevent jemalloc/glibc allocator mismatch"
+#else
+#define RTLD_DEEPBIND 0
+#endif
+#endif
+#define PYBIND11_NONLIMITEDAPI_DLOPEN(dir, file) dlopen((dir + "lib" + file + PYBIND11_NONLIMITEDAPI_SHLIB_SUFFIX).c_str(), RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND)
 #endif
 #define PYBIND11_NONLIMITEDAPI_DLOPEN_ERROR dlerror()
 #endif
